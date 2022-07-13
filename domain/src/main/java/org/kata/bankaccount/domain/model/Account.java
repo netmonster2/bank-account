@@ -19,7 +19,7 @@ public class Account {
 
     public void withdraw(int withdrawalAmount) {
         if (withdrawalAmount > balance)
-            throw new InsufficientBalanceException();
+            throw new InsufficientBalanceException(balance);
         balance -= withdrawalAmount;
     }
 }

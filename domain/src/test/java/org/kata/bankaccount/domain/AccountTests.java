@@ -7,6 +7,7 @@ import org.kata.bankaccount.domain.exception.InsufficientBalanceException;
 import org.kata.bankaccount.domain.model.Account;
 import org.kata.bankaccount.domain.util.TestUtils;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -57,9 +58,14 @@ public class AccountTests {
 
         bankAccount.deposit(randomInitialDeposit);
 
-        assertThrows(InsufficientBalanceException.class,
-                () -> bankAccount.withdraw(randomWithdrawalAmount),
-                "The withdrawal didn't raise an exception with an insufficient balance");
+        int balanceBeforeWithdraw = bankAccount.getBalance();
+
+        assertAll("The withdrawal should raise an exception and the account balance should stay untouched",
+                () -> assertThrows(InsufficientBalanceException.class,
+                        () -> bankAccount.withdraw(randomWithdrawalAmount),
+                        "The withdrawal didn't raise an exception with an insufficient balance"),
+                () -> assertEquals(balanceBeforeWithdraw, bankAccount.getBalance(),
+                        "The account balance after withdrawal with an insufficient balance has changed. "));
     }
 }
 
