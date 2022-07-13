@@ -14,9 +14,11 @@ public class AccountTests {
     @Test
     public void moneyDeposit() {
         int randomDepositAmount = ThreadLocalRandom.current().nextInt(10, 1000);
-        Account bankAccount = new Account(0);
+        Account bankAccount = new Account();
+        int oldBalance = bankAccount.getBalance();
         bankAccount.deposit(randomDepositAmount);
-        assertEquals(randomDepositAmount, bankAccount.getBalance(),
+        int newBalance = bankAccount.getBalance();
+        assertEquals(randomDepositAmount, newBalance - oldBalance,
                 () -> String.format("The account balance didn't increase of %s after deposit", randomDepositAmount));
     }
 }

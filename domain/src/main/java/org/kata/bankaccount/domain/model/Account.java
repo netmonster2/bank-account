@@ -1,17 +1,17 @@
 package org.kata.bankaccount.domain.model;
 
 public class Account {
-    private int initialBalance;
+    private int balance;
 
-    public Account(int initialBalance) {
-        this.initialBalance = initialBalance;
+    public Account() {
+        this.balance = 0;
     }
 
     public void deposit(int depositAmount) {
-        initialBalance += depositAmount;
+        balance += depositAmount;
     }
 
     public int getBalance() {
-        return initialBalance;
+        return balance;
     }
 }
