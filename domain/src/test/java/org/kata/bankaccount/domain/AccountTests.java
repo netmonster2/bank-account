@@ -3,10 +3,12 @@ package org.kata.bankaccount.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.kata.bankaccount.domain.exception.InsufficientBalanceException;
 import org.kata.bankaccount.domain.model.Account;
 import org.kata.bankaccount.domain.util.TestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class AccountTests {
 
@@ -32,7 +34,7 @@ public class AccountTests {
                         "The new account balance is incorrect", randomDepositAmount));
     }
 
-    @DisplayName("When I withdraw from my account and I have sufficient balance, the account balance decreases")
+    @DisplayName("When I withdraw from my account and I have a sufficient balance, the account balance decreases")
     @Test
     public void moneyWithdrawalSufficientBalance() {
         int randomInitialDeposit = TestUtils.getRandomInt(500, 1000);
@@ -40,6 +42,25 @@ public class AccountTests {
 
         bankAccount.deposit(randomInitialDeposit);
         bankAccount.withdraw(randomWithdrawalAmount);
+        int newBalance = bankAccount.getBalance();
+
+        assertEquals(randomInitialDeposit - randomWithdrawalAmount, newBalance,
+                () -> String.format("The account balance didn't decrease of %s after withdrawal. " +
+                        "The new account balance is incorrect", randomWithdrawalAmount));
+    }
+
+    @DisplayName("When I withdraw from my account and I have an insufficient balance, an exception is raised")
+    @Test
+    public void moneyWithdrawalInsufficientBalance() {
+        int randomInitialDeposit = TestUtils.getRandomInt(10, 400);
+        int randomWithdrawalAmount = TestUtils.getRandomInt(500, 1000);
+
+        bankAccount.deposit(randomInitialDeposit);
+
+        assertThrows(InsufficientBalanceException.class,
+                () -> bankAccount.withdraw(randomWithdrawalAmount),
+                "The withdrawal didn't raise an exception with an insufficient balance");
+
         int newBalance = bankAccount.getBalance();
 
         assertEquals(randomInitialDeposit - randomWithdrawalAmount, newBalance,
