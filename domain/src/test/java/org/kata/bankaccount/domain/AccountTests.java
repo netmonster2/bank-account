@@ -60,12 +60,6 @@ public class AccountTests {
         assertThrows(InsufficientBalanceException.class,
                 () -> bankAccount.withdraw(randomWithdrawalAmount),
                 "The withdrawal didn't raise an exception with an insufficient balance");
-
-        int newBalance = bankAccount.getBalance();
-
-        assertEquals(randomInitialDeposit - randomWithdrawalAmount, newBalance,
-                () -> String.format("The account balance didn't decrease of %s after withdrawal. " +
-                        "The new account balance is incorrect", randomWithdrawalAmount));
     }
 }
 

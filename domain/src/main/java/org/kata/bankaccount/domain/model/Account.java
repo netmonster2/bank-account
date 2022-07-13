@@ -1,5 +1,7 @@
 package org.kata.bankaccount.domain.model;
 
+import org.kata.bankaccount.domain.exception.InsufficientBalanceException;
+
 public class Account {
     private int balance;
 
@@ -16,6 +18,8 @@ public class Account {
     }
 
     public void withdraw(int withdrawalAmount) {
+        if (withdrawalAmount > balance)
+            throw new InsufficientBalanceException();
         balance -= withdrawalAmount;
     }
 }
