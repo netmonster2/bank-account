@@ -14,12 +14,30 @@ public class AccountTests {
     @Test
     public void moneyDeposit() {
         int randomDepositAmount = ThreadLocalRandom.current().nextInt(10, 1000);
+
         Account bankAccount = new Account();
         int oldBalance = bankAccount.getBalance();
+
         bankAccount.deposit(randomDepositAmount);
         int newBalance = bankAccount.getBalance();
+
         assertEquals(randomDepositAmount, newBalance - oldBalance,
                 () -> String.format("The account balance didn't increase of %s after deposit", randomDepositAmount));
+    }
+
+    @DisplayName("When I withdraw from my account and I have sufficient balance, the account balance decreases")
+    @Test
+    public void moneyWithdrawalSufficientBalance() {
+        int randomInitialDeposit = ThreadLocalRandom.current().nextInt(500, 1000);
+        int randomWithdrawalAmount = ThreadLocalRandom.current().nextInt(10, 400);
+
+        Account bankAccount = new Account();
+        bankAccount.deposit(randomInitialDeposit);
+        bankAccount.withdraw(randomWithdrawalAmount);
+        int newBalance = bankAccount.getBalance();
+
+        assertEquals(randomInitialDeposit - randomWithdrawalAmount, newBalance,
+                () -> String.format("The account balance didn't decrease of %s after withdrawal", randomWithdrawalAmount));
     }
 }
 
