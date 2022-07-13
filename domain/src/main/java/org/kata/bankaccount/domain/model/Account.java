@@ -2,6 +2,9 @@ package org.kata.bankaccount.domain.model;
 
 import org.kata.bankaccount.domain.exception.InsufficientBalanceException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Account {
     private int balance;
 
@@ -21,5 +24,9 @@ public class Account {
         if (withdrawalAmount > balance)
             throw new InsufficientBalanceException(balance);
         balance -= withdrawalAmount;
+    }
+
+    public List<Operation> getOperations() {
+        return new ArrayList<>();
     }
 }

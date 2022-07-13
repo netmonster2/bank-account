@@ -67,5 +67,19 @@ public class AccountTests {
                 () -> assertEquals(balanceBeforeWithdraw, bankAccount.getBalance(),
                         "The account balance after withdrawal with an insufficient balance has changed. "));
     }
+
+    @DisplayName("When I do some operations on my account, I can check their history")
+    @Test
+    public void checkHistoryOfOperations() {
+        int randomFirstDeposit = TestUtils.getRandomInt(400, 500);
+        int randomWithdrawal = TestUtils.getRandomInt(10, 300);
+        int randomSecondDeposit = TestUtils.getRandomInt(10, 500);
+
+        bankAccount.deposit(randomFirstDeposit);
+        bankAccount.withdraw(randomWithdrawal);
+        bankAccount.deposit(randomSecondDeposit);
+
+        assertEquals(3, bankAccount.getOperations().size(), "The number of account operations is incorrect");
+    }
 }
 
