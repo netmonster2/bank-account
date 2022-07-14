@@ -15,6 +15,7 @@ import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -100,7 +101,7 @@ public class AccountTests {
         int expectedBalance = randomInitialDeposit - randomWithdrawalAmount;
         Date endDate = new Date();
 
-        Operation lastOperation = bankAccount.getHistory().getLastOperation();
+        Operation lastOperation = bankAccount.getHistory().getLatestOperation();
         bankAccount.getHistory().getOperationList().forEach((op) -> System.out.println(op.getType().name() + ":" + op.getDate().getTime()));
         assertAll("The last operation details needs to be the same as the withdrawal",
                 () -> assertEquals(lastOperation.getAmount(), -1 * randomWithdrawalAmount,
@@ -148,7 +149,7 @@ public class AccountTests {
         int expectedBalance = 2 * randomInitialDeposit - randomWithdrawalAmount;
         Date endDate = new Date();
 
-        Operation lastOperation = bankAccount.getHistory().getLastOperation();
+        Operation lastOperation = bankAccount.getHistory().getLatestOperation();
         assertAll("The last operation details needs to be the same as the deposit",
                 () -> assertEquals(lastOperation.getAmount(), randomInitialDeposit,
                         "The last operation amount is incorrect"),
@@ -162,6 +163,17 @@ public class AccountTests {
                                 && lastOperation.getDate().before(endDate)),
                         () -> String.format("The last operation date is incorrect. It should be between [%s and %s]. " +
                                 "Actual value is: %s", startDate, endDate, lastOperation.getDate()))
+        );
+    }
+
+    @DisplayName("When I make no operations in my account, the history is empty")
+    @Test
+    public void emptyOperationsHistory() {
+        assertAll("The operations history needs to be empty",
+                () -> assertEquals(0, bankAccount.getHistory().getOperationList().size(),
+                        "The operations history is not empty."),
+                () -> assertNull(bankAccount.getHistory().getLatestOperation(),
+                        "The last operation is not null")
         );
     }
 }
