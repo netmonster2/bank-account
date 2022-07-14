@@ -1,8 +1,12 @@
 package org.kata.bankaccount.domain.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Operation {
 
     private Type type;
@@ -10,18 +14,7 @@ public class Operation {
     private int amount;
 
     public enum Type {
-        WITHDRAW("Withdraw"),
-        DEPOSIT("Deposit");
-
-        private final String label;
-
-        Type(String label) {
-            this.label = label;
-        }
-
-        @Override
-        public String toString() {
-            return label;
-        }
+        WITHDRAW,
+        DEPOSIT
     }
 }

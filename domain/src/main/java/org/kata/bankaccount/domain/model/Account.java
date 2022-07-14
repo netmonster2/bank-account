@@ -8,10 +8,12 @@ import java.util.List;
 public class Account {
     private int balance;
     private final List<Operation> operationList;
+    private final History history;
 
     public Account() {
         this.balance = 0;
         this.operationList = new ArrayList<>();
+        this.history = new History();
     }
 
     public void deposit(int depositAmount) {
@@ -28,6 +30,7 @@ public class Account {
             throw new InsufficientBalanceException(balance);
         balance -= withdrawalAmount;
         operationList.add(new Operation());
+        history.addOperation(new Operation(Operation.Type.WITHDRAW, balance, -1 * withdrawalAmount));
     }
 
     public List<Operation> getOperationsList() {
@@ -35,6 +38,6 @@ public class Account {
     }
 
     public History getHistory() {
-        return new History();
+        return history;
     }
 }
