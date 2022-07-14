@@ -97,11 +97,57 @@ public class AccountTests {
         Date endDate = new Date();
 
         Operation lastOperation = bankAccount.getHistory().getLastOperation();
-
         assertAll("The last operation details needs to be the same as the withdrawal",
                 () -> assertEquals(lastOperation.getAmount(), -1 * randomWithdrawalAmount,
                         "The last operation amount is incorrect"),
                 () -> assertEquals(lastOperation.getType(), Operation.Type.WITHDRAW,
+                        "The last operation type is incorrect"),
+                () -> assertEquals(expectedBalance, lastOperation.getBalance(),
+                        "The last operation balance is incorrect"),
+                () -> assertTrue(lastOperation.getDate().equals(startDate)
+                                || lastOperation.getDate().equals(endDate)
+                                || (lastOperation.getDate().after(startDate)
+                                && lastOperation.getDate().before(endDate)),
+                        () -> String.format("The last operation date is incorrect. It should be between [%s and %s]. " +
+                                "Actual value is: %s", startDate, endDate, lastOperation.getDate()))
+        );
+    }
+
+    @DisplayName("When I withdraw from my account and I have an insufficient balance, no operation is added")
+    @Test
+    public void lastOperationAfterWithdrawalInsufficientBalance() {
+        int randomInitialDeposit = TestUtils.getRandomInt(10, 400);
+        int randomWithdrawalAmount = TestUtils.getRandomInt(500, 1000);
+
+        bankAccount.deposit(randomInitialDeposit);
+
+        assertAll("There should be no added operation after the initial deposit",
+                () -> assertThrows(InsufficientBalanceException.class,
+                        () -> bankAccount.withdraw(randomWithdrawalAmount),
+                        "The withdrawal didn't raise an exception with an insufficient balance"),
+                () -> assertEquals(1, bankAccount.getHistory().getOperationList().size(),
+                        "History operations size is incorrect"));
+    }
+
+    @DisplayName("When I withdraw from my account and I have a sufficient balance, it will be the last operation")
+    @Test
+    public void lastOperationAfterDeposit() {
+        int randomInitialDeposit = TestUtils.getRandomInt(500, 1000);
+        int randomWithdrawalAmount = TestUtils.getRandomInt(10, 400);
+        Date startDate = new Date();
+
+        bankAccount.deposit(randomInitialDeposit);
+        bankAccount.withdraw(randomWithdrawalAmount);
+        bankAccount.deposit(randomInitialDeposit);
+
+        int expectedBalance = 2 * randomInitialDeposit - randomWithdrawalAmount;
+        Date endDate = new Date();
+
+        Operation lastOperation = bankAccount.getHistory().getLastOperation();
+        assertAll("The last operation details needs to be the same as the deposit",
+                () -> assertEquals(lastOperation.getAmount(), randomInitialDeposit,
+                        "The last operation amount is incorrect"),
+                () -> assertEquals(lastOperation.getType(), Operation.Type.DEPOSIT,
                         "The last operation type is incorrect"),
                 () -> assertEquals(expectedBalance, lastOperation.getBalance(),
                         "The last operation balance is incorrect"),
