@@ -6,6 +6,9 @@ import lombok.Setter;
 
 import java.util.Date;
 
+/**
+ * The operation DTO
+ */
 @Getter
 @Setter
 public class Operation {
