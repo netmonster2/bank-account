@@ -6,6 +6,9 @@ import org.junit.jupiter.api.Test;
 import org.kata.bankaccount.domain.exception.InsufficientBalanceException;
 import org.kata.bankaccount.domain.model.Account;
 import org.kata.bankaccount.domain.model.Operation;
+import org.kata.bankaccount.domain.port.api.BankAccServicePort;
+import org.kata.bankaccount.domain.port.api.impl.BankAccServiceImpl;
+import org.kata.bankaccount.domain.stub.BankAccPersistenceStub;
 import org.kata.bankaccount.domain.util.TestUtils;
 
 import java.util.Date;
@@ -21,7 +24,8 @@ public class AccountTests {
 
     @BeforeEach
     public void setUp() {
-        bankAccount = new Account();
+        BankAccServicePort bankAccServicePort = new BankAccServiceImpl(new BankAccPersistenceStub());
+        bankAccount = bankAccServicePort.getBankAccount();
     }
 
     @DisplayName("When I make a deposit in my account, the account balance increases")
@@ -31,7 +35,7 @@ public class AccountTests {
 
         int oldBalance = bankAccount.getBalance();
 
-        int newBalance = bankAccount.deposit(randomDepositAmount);
+        int newBalance = bankAccount.deposit(randomDepositAmount).getBalance();
 
         assertEquals(randomDepositAmount, newBalance - oldBalance,
                 () -> String.format("The account balance didn't increase of %s after deposit. " +
@@ -45,7 +49,7 @@ public class AccountTests {
         int randomWithdrawalAmount = TestUtils.getRandomInt(10, 400);
 
         bankAccount.deposit(randomInitialDeposit);
-        int newBalance = bankAccount.withdraw(randomWithdrawalAmount);
+        int newBalance = bankAccount.withdraw(randomWithdrawalAmount).getBalance();
 
         assertEquals(randomInitialDeposit - randomWithdrawalAmount, newBalance,
                 () -> String.format("The account balance didn't decrease of %s after withdrawal. " +
@@ -58,7 +62,7 @@ public class AccountTests {
         int randomInitialDeposit = TestUtils.getRandomInt(10, 400);
         int randomWithdrawalAmount = TestUtils.getRandomInt(500, 1000);
 
-        int balanceBeforeWithdraw = bankAccount.deposit(randomInitialDeposit);
+        int balanceBeforeWithdraw = bankAccount.deposit(randomInitialDeposit).getBalance();
 
         assertAll("The withdrawal should raise an exception and the account balance should stay untouched",
                 () -> assertThrows(InsufficientBalanceException.class,
@@ -97,6 +101,7 @@ public class AccountTests {
         Date endDate = new Date();
 
         Operation lastOperation = bankAccount.getHistory().getLastOperation();
+        bankAccount.getHistory().getOperationList().forEach((op) -> System.out.println(op.getType().name() + ":" + op.getDate().getTime()));
         assertAll("The last operation details needs to be the same as the withdrawal",
                 () -> assertEquals(lastOperation.getAmount(), -1 * randomWithdrawalAmount,
                         "The last operation amount is incorrect"),
@@ -129,7 +134,7 @@ public class AccountTests {
                         "History operations size is incorrect"));
     }
 
-    @DisplayName("When I withdraw from my account and I have a sufficient balance, it will be the last operation")
+    @DisplayName("When I make a deposit in my account, it will be the last operation")
     @Test
     public void lastOperationAfterDeposit() {
         int randomInitialDeposit = TestUtils.getRandomInt(500, 1000);

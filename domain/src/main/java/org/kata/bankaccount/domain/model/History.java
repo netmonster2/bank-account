@@ -1,42 +1,57 @@
 package org.kata.bankaccount.domain.model;
 
-import lombok.Getter;
+import org.kata.bankaccount.domain.port.spi.BankAccPersistencePort;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class History {
 
-    @Getter
-    private final List<Operation> operationList;
+    private List<Operation> operationList;
 
-    public History() {
-        this.operationList = new ArrayList<>();
+    private final BankAccPersistencePort bankAccPersistencePort;
+
+    public History(BankAccPersistencePort bankAccPersistencePort) {
+        this.bankAccPersistencePort = bankAccPersistencePort;
+        loadOperationsList();
+    }
+
+    private void loadOperationsList() {
+        operationList = bankAccPersistencePort.loadOperations();
+    }
+
+    public List<Operation> getOperationList() {
+        loadOperationsList();
+        return operationList;
     }
 
     public Operation getLastOperation() {
-        return operationList.get(operationList.size() - 1);
+        loadOperationsList();
+        if (operationList == null || operationList.size() == 0)
+            return null;
+        else {
+            return operationList.get(operationList.size() - 1);
+        }
     }
 
     int calculateBalance() {
+        loadOperationsList();
         return operationList.stream().mapToInt(Operation::getAmount).sum();
     }
 
-    public int addWithdrawal(int amount) {
-        addOperation(Operation.Type.WITHDRAW, -1 * amount);
-        return calculateBalance();
+    public Operation addWithdrawal(int amount) {
+        return addOperation(Operation.Type.WITHDRAW, -1 * amount);
     }
 
-    public int addDeposit(int amount) {
-        addOperation(Operation.Type.DEPOSIT, amount);
-        return calculateBalance();
+    public Operation addDeposit(int amount) {
+        return addOperation(Operation.Type.DEPOSIT, amount);
     }
 
-    private void addOperation(Operation.Type operationType, int amount) {
-        operationList.add(Operation.builder()
+    private Operation addOperation(Operation.Type operationType, int amount) {
+        Operation operation = Operation.builder()
                 .amount(amount)
                 .balance(calculateBalance() + amount)
                 .type(operationType)
-                .build());
+                .build();
+        return bankAccPersistencePort.saveOperation(operation);
     }
 }
