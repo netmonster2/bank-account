@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.kata.bankaccount.domain.exception.InsufficientBalanceException;
 import org.kata.bankaccount.domain.model.Account;
+import org.kata.bankaccount.domain.model.Operation;
 import org.kata.bankaccount.domain.util.TestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -79,7 +80,27 @@ public class AccountTests {
         bankAccount.withdraw(randomWithdrawal);
         bankAccount.deposit(randomSecondDeposit);
 
-        assertEquals(3, bankAccount.getHistory().size(), "The number of account operations is incorrect");
+        assertEquals(3, bankAccount.getOperationsList().size(), "The number of account operations is incorrect");
+    }
+
+    @DisplayName("When I withdraw from my account and I have a sufficient balance, it will be the last operation")
+    @Test
+    public void lastOperationAfterWithdrawal() {
+        int randomInitialDeposit = TestUtils.getRandomInt(500, 1000);
+        int randomWithdrawalAmount = TestUtils.getRandomInt(10, 400);
+
+        bankAccount.deposit(randomInitialDeposit);
+        bankAccount.withdraw(randomWithdrawalAmount);
+
+        int expectedBalance = randomInitialDeposit - randomWithdrawalAmount;
+
+        Operation lastOperation = bankAccount.getHistory().getLastOperation();
+
+        assertAll("The last operation details needs to be the same as the withdrawal",
+                () -> assertEquals(lastOperation.getAmount(), -1 * randomWithdrawalAmount, "The last operation amount is incorrect"),
+                () -> assertEquals(lastOperation.getType(), Operation.Type.WITHDRAW, "The last operation type is incorrect"),
+                () -> assertEquals(expectedBalance, lastOperation.getBalance(), "The last operation balance is incorrect")
+        );
     }
 }
 

@@ -7,16 +7,16 @@ import java.util.List;
 
 public class Account {
     private int balance;
-    private final List<Operation> history;
+    private final List<Operation> operationList;
 
     public Account() {
         this.balance = 0;
-        this.history = new ArrayList<>();
+        this.operationList = new ArrayList<>();
     }
 
     public void deposit(int depositAmount) {
         balance += depositAmount;
-        history.add(new Operation());
+        operationList.add(new Operation());
     }
 
     public int getBalance() {
@@ -27,10 +27,14 @@ public class Account {
         if (withdrawalAmount > balance)
             throw new InsufficientBalanceException(balance);
         balance -= withdrawalAmount;
-        history.add(new Operation());
+        operationList.add(new Operation());
     }
 
-    public List<Operation> getHistory() {
-        return history;
+    public List<Operation> getOperationsList() {
+        return operationList;
+    }
+
+    public History getHistory() {
+        return new History();
     }
 }
