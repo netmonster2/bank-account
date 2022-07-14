@@ -8,9 +8,12 @@ import org.kata.bankaccount.domain.model.Account;
 import org.kata.bankaccount.domain.model.Operation;
 import org.kata.bankaccount.domain.util.TestUtils;
 
+import java.util.Date;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class AccountTests {
 
@@ -28,8 +31,7 @@ public class AccountTests {
 
         int oldBalance = bankAccount.getBalance();
 
-        bankAccount.deposit(randomDepositAmount);
-        int newBalance = bankAccount.getBalance();
+        int newBalance = bankAccount.deposit(randomDepositAmount);
 
         assertEquals(randomDepositAmount, newBalance - oldBalance,
                 () -> String.format("The account balance didn't increase of %s after deposit. " +
@@ -43,8 +45,7 @@ public class AccountTests {
         int randomWithdrawalAmount = TestUtils.getRandomInt(10, 400);
 
         bankAccount.deposit(randomInitialDeposit);
-        bankAccount.withdraw(randomWithdrawalAmount);
-        int newBalance = bankAccount.getBalance();
+        int newBalance = bankAccount.withdraw(randomWithdrawalAmount);
 
         assertEquals(randomInitialDeposit - randomWithdrawalAmount, newBalance,
                 () -> String.format("The account balance didn't decrease of %s after withdrawal. " +
@@ -57,9 +58,7 @@ public class AccountTests {
         int randomInitialDeposit = TestUtils.getRandomInt(10, 400);
         int randomWithdrawalAmount = TestUtils.getRandomInt(500, 1000);
 
-        bankAccount.deposit(randomInitialDeposit);
-
-        int balanceBeforeWithdraw = bankAccount.getBalance();
+        int balanceBeforeWithdraw = bankAccount.deposit(randomInitialDeposit);
 
         assertAll("The withdrawal should raise an exception and the account balance should stay untouched",
                 () -> assertThrows(InsufficientBalanceException.class,
@@ -80,7 +79,8 @@ public class AccountTests {
         bankAccount.withdraw(randomWithdrawal);
         bankAccount.deposit(randomSecondDeposit);
 
-        assertEquals(3, bankAccount.getOperationsList().size(), "The number of account operations is incorrect");
+        assertEquals(3, bankAccount.getHistory().getOperationList().size(),
+                "The number of account operations is incorrect");
     }
 
     @DisplayName("When I withdraw from my account and I have a sufficient balance, it will be the last operation")
@@ -88,18 +88,29 @@ public class AccountTests {
     public void lastOperationAfterWithdrawal() {
         int randomInitialDeposit = TestUtils.getRandomInt(500, 1000);
         int randomWithdrawalAmount = TestUtils.getRandomInt(10, 400);
+        Date startDate = new Date();
 
         bankAccount.deposit(randomInitialDeposit);
         bankAccount.withdraw(randomWithdrawalAmount);
 
         int expectedBalance = randomInitialDeposit - randomWithdrawalAmount;
+        Date endDate = new Date();
 
         Operation lastOperation = bankAccount.getHistory().getLastOperation();
 
         assertAll("The last operation details needs to be the same as the withdrawal",
-                () -> assertEquals(lastOperation.getAmount(), -1 * randomWithdrawalAmount, "The last operation amount is incorrect"),
-                () -> assertEquals(lastOperation.getType(), Operation.Type.WITHDRAW, "The last operation type is incorrect"),
-                () -> assertEquals(expectedBalance, lastOperation.getBalance(), "The last operation balance is incorrect")
+                () -> assertEquals(lastOperation.getAmount(), -1 * randomWithdrawalAmount,
+                        "The last operation amount is incorrect"),
+                () -> assertEquals(lastOperation.getType(), Operation.Type.WITHDRAW,
+                        "The last operation type is incorrect"),
+                () -> assertEquals(expectedBalance, lastOperation.getBalance(),
+                        "The last operation balance is incorrect"),
+                () -> assertTrue(lastOperation.getDate().equals(startDate)
+                                || lastOperation.getDate().equals(endDate)
+                                || (lastOperation.getDate().after(startDate)
+                                && lastOperation.getDate().before(endDate)),
+                        () -> String.format("The last operation date is incorrect. It should be between [%s and %s]. " +
+                                "Actual value is: %s", startDate, endDate, lastOperation.getDate()))
         );
     }
 }
