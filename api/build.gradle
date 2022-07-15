@@ -1,0 +1,23 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.1'
+    id "io.spring.dependency-management" version "1.0.12.RELEASE"
+    id 'java'
+}
+
+group 'org.kata.bankaccount'
+version '0.1'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.kata.bankaccount', name: 'domain', version: '0.1'
+    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+}
+
+test {
+    useJUnitPlatform()
+}

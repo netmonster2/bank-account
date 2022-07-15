@@ -1,12 +1,18 @@
 plugins {
     id 'java'
+    id 'maven-publish'
 }
 
 group 'org.kata.bankaccount'
 version '0.1'
 
 repositories {
+    mavenLocal()
     mavenCentral()
+}
+
+java {
+    withSourcesJar()
 }
 
 dependencies {
@@ -18,4 +24,15 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId project.group
+            artifactId project.name
+            version version
+        }
+    }
 }

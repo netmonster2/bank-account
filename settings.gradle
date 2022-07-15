@@ -1,3 +1,4 @@
 rootProject.name = 'BankAccount'
 include 'domain'
+include 'api'
 
