@@ -58,7 +58,6 @@ public class DepositControllerTests extends BaseControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.amount").value(depositAmount))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.balance").value(depositAmount))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.type").value(DtoConverter.DEPOSIT_OP_LABEL))
-                .andExpect(MockMvcResultMatchers.jsonPath("$.date").value(expectedDateValue));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.type").value(DtoConverter.DEPOSIT_OP_LABEL));
     }
 }

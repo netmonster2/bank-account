@@ -3,7 +3,6 @@ package org.kata.bankaccount.api.controller.dto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Singular;
-import org.kata.bankaccount.domain.model.Operation;
 
 import java.util.List;
 
@@ -14,7 +13,7 @@ import java.util.List;
 @Getter
 public class HistoryDto {
     @Singular
-    private List<Operation> operations;
+    private List<OperationResponseDto> operations;
 
     private int currentBalance;
 

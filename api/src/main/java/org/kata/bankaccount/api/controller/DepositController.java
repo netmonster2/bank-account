@@ -8,6 +8,7 @@ import org.kata.bankaccount.api.controller.dto.OperationRequestDto;
 import org.kata.bankaccount.api.controller.dto.OperationResponseDto;
 import org.kata.bankaccount.api.util.DtoConverter;
 import org.kata.bankaccount.domain.model.Operation;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +18,7 @@ import javax.validation.Valid;
 
 
 @RestController
+@Validated
 @RequestMapping(DepositController.ACCOUNT_DEPOSIT_BASE_ROUTE)
 public class DepositController extends BaseController {
 
@@ -28,7 +30,7 @@ public class DepositController extends BaseController {
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = OperationResponseDto.class))})})
     @PostMapping("")
-    public OperationResponseDto deposit(@Valid @RequestBody OperationRequestDto operationRequest) {
+    public OperationResponseDto deposit(@RequestBody @Valid OperationRequestDto operationRequest) {
         logger.info("Requesting deposit of {}", operationRequest.getAmount());
         Operation operationModel = bankAccServicePort.getBankAccount().deposit(operationRequest.getAmount());
         return DtoConverter.fromOperationModel(operationModel);

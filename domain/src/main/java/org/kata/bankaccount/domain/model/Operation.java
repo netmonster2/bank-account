@@ -13,10 +13,10 @@ import java.util.Date;
 @Setter
 public class Operation {
 
-    private final Type type;
-    private final int balance;
-    private final int amount;
-    private final Date date;
+    private Type type;
+    private int balance;
+    private int amount;
+    private Date date;
 
     @Builder
     public Operation(Type type, int balance, int amount) {

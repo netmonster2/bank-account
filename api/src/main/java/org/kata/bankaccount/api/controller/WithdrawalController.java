@@ -35,7 +35,7 @@ public class WithdrawalController extends BaseController {
             @ApiResponse(responseCode = "400", description = "Balance is insufficient for the withdrawal",
                     content = @Content)})
     @PostMapping("")
-    public OperationResponseDto withdraw(@Valid @RequestBody OperationRequestDto operationRequest) {
+    public OperationResponseDto withdraw(@RequestBody @Valid OperationRequestDto operationRequest) {
         try {
             logger.info("Requesting withdrawal of {}", operationRequest.getAmount());
             Operation operationModel = bankAccServicePort.getBankAccount().withdraw(operationRequest.getAmount());

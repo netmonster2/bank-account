@@ -13,4 +13,14 @@ subprojects {
     ext {
         lombokVersion = '1.18.24'
     }
+
+    configurations {
+        implementation
+        annotationProcessor
+    }
+
+    dependencies {
+        implementation group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+        annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    }
 }

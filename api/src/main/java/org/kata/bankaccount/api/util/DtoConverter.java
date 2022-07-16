@@ -36,7 +36,7 @@ public class DtoConverter {
     public static HistoryDto fromOperationsList(List<Operation> operationList, int currentBalance) {
         HistoryDto.HistoryDtoBuilder historyDtoBuilder = HistoryDto.builder();
         historyDtoBuilder.currentBalance(currentBalance);
-        operationList.forEach(historyDtoBuilder::operation);
+        operationList.forEach(op -> historyDtoBuilder.operation(fromOperationModel(op)));
         return historyDtoBuilder.build();
     }
 }

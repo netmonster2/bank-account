@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * This DTO class represents the data format of an account operation request
@@ -11,6 +12,7 @@ import javax.validation.constraints.Min;
 @Getter
 @Setter
 public class OperationRequestDto {
-    @Min(1)
+    @NotNull
+    @Min(0)
     private int amount;
 }
