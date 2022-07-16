@@ -15,7 +15,10 @@ repositories {
 dependencies {
     implementation group: 'org.kata.bankaccount', name: 'domain', version: '0.1'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-web'
+    implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.6.9'
     testImplementation group: 'org.springframework.boot', name: 'spring-boot-starter-test'
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+    annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
 }
 
 test {
