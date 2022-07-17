@@ -7,14 +7,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.kata.bankaccount.api.controller.dto.OperationRequestDto;
 import org.kata.bankaccount.api.controller.dto.OperationResponseDto;
 import org.kata.bankaccount.api.util.DtoConverter;
-import org.kata.bankaccount.domain.exception.InsufficientBalanceException;
 import org.kata.bankaccount.domain.model.Operation;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 
@@ -36,15 +33,9 @@ public class WithdrawalController extends BaseController {
                     content = @Content)})
     @PostMapping("")
     public OperationResponseDto withdraw(@RequestBody @Valid OperationRequestDto operationRequest) {
-        try {
-            logger.info("Requesting withdrawal of {}", operationRequest.getAmount());
-            Operation operationModel = bankAccServicePort.getBankAccount().withdraw(operationRequest.getAmount());
-            return DtoConverter.fromOperationModel(operationModel);
-        } catch (InsufficientBalanceException e) {
-            logger.warn("{} -> Requested amount: {}",
-                    e.getMessage(), operationRequest.getAmount());
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
-        }
+        logger.info("Requesting withdrawal of {}", operationRequest.getAmount());
+        Operation operationModel = bankAccServicePort.getBankAccount().withdraw(operationRequest.getAmount());
+        return DtoConverter.fromOperationModel(operationModel);
     }
 
 }

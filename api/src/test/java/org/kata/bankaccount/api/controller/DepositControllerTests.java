@@ -10,14 +10,11 @@ import org.kata.bankaccount.api.controller.dto.OperationRequestDto;
 import org.kata.bankaccount.api.util.DtoConverter;
 import org.kata.bankaccount.domain.model.Operation;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.kata.bankaccount.api.controller.DepositController.ACCOUNT_DEPOSIT_BASE_ROUTE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -85,10 +82,9 @@ public class DepositControllerTests extends BaseControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(result -> assertThat(result.getResponse().getErrorMessage(),
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
                         Matchers.containsString("The amount")))
-                .andExpect(result -> assertThat(result.getResponse().getErrorMessage(),
-                        Matchers.containsString("is invalid")))
-                .andExpect(result -> assertEquals(result.getResponse().getStatus(), HttpStatus.BAD_REQUEST.value()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                        Matchers.containsString("is invalid")));
     }
 }

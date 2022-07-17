@@ -50,5 +50,14 @@ public class WithdrawalTests extends BaseTests {
         assertThrows(InvalidOperationAmountException.class, () -> bankAccount.withdraw(withdrawAmount),
                 "The withdrawal didn't raise an exception with 0 amount");
     }
+
+    @DisplayName("When I withdraw from my account a negative amount, an exception is raised")
+    @Test
+    public void moneyWithdrawNegativeAmountException() {
+        int withdrawAmount = -100;
+
+        assertThrows(InvalidOperationAmountException.class, () -> bankAccount.withdraw(withdrawAmount),
+                "The withdrawal didn't raise an exception with negative amount");
+    }
 }
 

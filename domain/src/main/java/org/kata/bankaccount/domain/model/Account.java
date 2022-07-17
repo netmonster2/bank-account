@@ -24,7 +24,7 @@ public class Account {
     public Operation deposit(int depositAmount) {
         if (depositAmount <= 0)
             throw new InvalidOperationAmountException
-                    (Operation.Type.DEPOSIT.name(), depositAmount, "Operation amount cannot be 0 or less");
+                    (Operation.Type.DEPOSIT.name(), depositAmount, "Deposit amount cannot be 0 or less");
         return history.addDeposit(depositAmount);
     }
 
@@ -36,9 +36,9 @@ public class Account {
      * @throws InsufficientBalanceException Thrown when the account balance is insufficient
      */
     public Operation withdraw(int withdrawalAmount) {
-        if (withdrawalAmount == 0)
+        if (withdrawalAmount <= 0)
             throw new InvalidOperationAmountException
-                    (Operation.Type.WITHDRAW.name(), withdrawalAmount, "Operation amount cannot be 0");
+                    (Operation.Type.WITHDRAW.name(), withdrawalAmount, "Withdrawal amount cannot be 0 or less");
         int currentBalance = getBalance();
         if (withdrawalAmount > currentBalance)
             throw new InsufficientBalanceException(currentBalance);

@@ -12,6 +12,7 @@ repositories {
 subprojects {
     ext {
         lombokVersion = '1.18.24'
+        domainVersion = '0.3'
     }
 
     configurations {

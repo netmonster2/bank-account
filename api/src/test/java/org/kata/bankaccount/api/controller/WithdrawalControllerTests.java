@@ -11,15 +11,12 @@ import org.kata.bankaccount.api.util.DateTimeUtil;
 import org.kata.bankaccount.api.util.DtoConverter;
 import org.kata.bankaccount.domain.model.Operation;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.kata.bankaccount.api.controller.WithdrawalController.ACCOUNT_WITHDRAWAL_BASE_ROUTE;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -96,9 +93,8 @@ public class WithdrawalControllerTests extends BaseControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(result -> assertThat(result.getResponse().getErrorMessage(),
-                        Matchers.containsString("Account balance is insufficient")))
-                .andExpect(result -> assertEquals(result.getResponse().getStatus(), HttpStatus.BAD_REQUEST.value()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                        Matchers.containsString("Account balance is insufficient")));
     }
 
     @DisplayName("When I make a withdrawal with 0 amount, the error message should be returned")
@@ -106,6 +102,18 @@ public class WithdrawalControllerTests extends BaseControllerTests {
     public void withdrawalWith0AMountRequestReturnError() throws Exception {
         int withdrawalAmount = 0;
 
+        assertErrorReturned(withdrawalAmount);
+    }
+
+    @DisplayName("When I make a withdrawal with a negative amount, the error message should be returned")
+    @Test
+    public void withdrawalWithNegativeAmountRequestReturnError() throws Exception {
+        int withdrawalAmount = -100;
+
+        assertErrorReturned(withdrawalAmount);
+    }
+
+    private void assertErrorReturned(int withdrawalAmount) throws Exception {
         given(this.bankAccPersistencePort.loadOperations())
                 .willReturn(new ArrayList<>());
 
@@ -117,10 +125,9 @@ public class WithdrawalControllerTests extends BaseControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(result -> assertThat(result.getResponse().getErrorMessage(),
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
                         Matchers.containsString("The amount")))
-                .andExpect(result -> assertThat(result.getResponse().getErrorMessage(),
-                        Matchers.containsString("is invalid")))
-                .andExpect(result -> assertEquals(result.getResponse().getStatus(), HttpStatus.BAD_REQUEST.value()));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.message",
+                        Matchers.containsString("is invalid")));
     }
 }
