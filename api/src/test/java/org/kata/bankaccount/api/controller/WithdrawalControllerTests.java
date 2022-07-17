@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -97,6 +98,29 @@ public class WithdrawalControllerTests extends BaseControllerTests {
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(result -> assertThat(result.getResponse().getErrorMessage(),
                         Matchers.containsString("Account balance is insufficient")))
+                .andExpect(result -> assertEquals(result.getResponse().getStatus(), HttpStatus.BAD_REQUEST.value()));
+    }
+
+    @DisplayName("When I make a withdrawal with 0 amount, the error message should be returned")
+    @Test
+    public void withdrawalWith0AMountRequestReturnError() throws Exception {
+        int withdrawalAmount = 0;
+
+        given(this.bankAccPersistencePort.loadOperations())
+                .willReturn(new ArrayList<>());
+
+        OperationRequestDto operationRequestDto = new OperationRequestDto();
+        operationRequestDto.setAmount(withdrawalAmount);
+        String requestJson = objectMapper.writeValueAsString(operationRequestDto);
+
+        this.mockMvc.perform(post(ACCOUNT_WITHDRAWAL_BASE_ROUTE)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(result -> assertThat(result.getResponse().getErrorMessage(),
+                        Matchers.containsString("The amount")))
+                .andExpect(result -> assertThat(result.getResponse().getErrorMessage(),
+                        Matchers.containsString("is invalid")))
                 .andExpect(result -> assertEquals(result.getResponse().getStatus(), HttpStatus.BAD_REQUEST.value()));
     }
 }

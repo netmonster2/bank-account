@@ -3,6 +3,7 @@ package org.kata.bankaccount.domain;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.kata.bankaccount.domain.exception.InsufficientBalanceException;
+import org.kata.bankaccount.domain.exception.InvalidOperationAmountException;
 import org.kata.bankaccount.domain.util.TestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -39,6 +40,15 @@ public class WithdrawalTests extends BaseTests {
                         "The withdrawal didn't raise an exception with an insufficient balance"),
                 () -> assertEquals(balanceBeforeWithdraw, bankAccount.getBalance(),
                         "The account balance after withdrawal with an insufficient balance has changed. "));
+    }
+
+    @DisplayName("When I withdraw from my account a 0 amount, an exception is raised")
+    @Test
+    public void moneyWithdraw0AmountException() {
+        int withdrawAmount = 0;
+
+        assertThrows(InvalidOperationAmountException.class, () -> bankAccount.withdraw(withdrawAmount),
+                "The withdrawal didn't raise an exception with 0 amount");
     }
 }
 
