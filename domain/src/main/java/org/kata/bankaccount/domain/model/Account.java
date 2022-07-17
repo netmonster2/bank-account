@@ -1,6 +1,7 @@
 package org.kata.bankaccount.domain.model;
 
 import org.kata.bankaccount.domain.exception.InsufficientBalanceException;
+import org.kata.bankaccount.domain.exception.InvalidOperationAmountException;
 import org.kata.bankaccount.domain.port.spi.BankAccPersistencePort;
 
 /**
@@ -21,6 +22,9 @@ public class Account {
      * @return The deposit operation
      */
     public Operation deposit(int depositAmount) {
+        if (depositAmount <= 0)
+            throw new InvalidOperationAmountException
+                    (Operation.Type.DEPOSIT.name(), depositAmount, "Operation amount cannot be 0 or less");
         return history.addDeposit(depositAmount);
     }
 
@@ -32,6 +36,9 @@ public class Account {
      * @throws InsufficientBalanceException Thrown when the account balance is insufficient
      */
     public Operation withdraw(int withdrawalAmount) {
+        if (withdrawalAmount == 0)
+            throw new InvalidOperationAmountException
+                    (Operation.Type.WITHDRAW.name(), withdrawalAmount, "Operation amount cannot be 0");
         int currentBalance = getBalance();
         if (withdrawalAmount > currentBalance)
             throw new InsufficientBalanceException(currentBalance);
