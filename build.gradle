@@ -25,3 +25,14 @@ subprojects {
         annotationProcessor group: 'org.projectlombok', name: 'lombok', version: lombokVersion
     }
 }
+
+task testReport(type: TestReport) {
+    destinationDir = file("$buildDir/testReport")
+    // Include the results from the `test` task in all subprojects
+    reportOn getTasksByName("test", true)
+}
+
+rootProject.getTasksByName('test', true)
+        .each {
+            it.finalizedBy(testReport)
+        }
